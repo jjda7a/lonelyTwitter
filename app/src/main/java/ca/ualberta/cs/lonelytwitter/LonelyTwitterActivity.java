@@ -26,91 +26,97 @@ import com.google.gson.reflect.TypeToken;
 
 public class LonelyTwitterActivity extends Activity {
 
-	private static final String FILENAME = "file.sav";
-	private EditText bodyText;
-	private ListView oldTweetsList;
+    private static final String FILENAME = "file.sav";
+    private EditText bodyText;
+    private ListView oldTweetsList;
 
-    private ArrayList<Tweet> tweets;
+    private ArrayList<Tweet> tweets = new ArrayList<Tweet>();
     private ArrayAdapter<Tweet> adapter;
 
-	/** Called when the activity is first created. */
-	@Override
-	public void onCreate(Bundle savedInstanceState) {
-		super.onCreate(savedInstanceState);
-		setContentView(R.layout.main);
+    /** Called when the activity is first created. */
+    @Override
+    public void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.main);
 
-		bodyText = (EditText) findViewById(R.id.body);
-		Button saveButton = (Button) findViewById(R.id.save);
-		oldTweetsList = (ListView) findViewById(R.id.oldTweetsList);
+        bodyText = (EditText) findViewById(R.id.body);
+        Button saveButton = (Button) findViewById(R.id.save);
+        Button clearButton = (Button) findViewById(R.id.clear);
+        oldTweetsList = (ListView) findViewById(R.id.oldTweetsList);
 
-		saveButton.setOnClickListener(new View.OnClickListener() {
+        saveButton.setOnClickListener(new View.OnClickListener() {
 
-			public void onClick(View v) {
-				setResult(RESULT_OK);
-				String text = bodyText.getText().toString();
-				Tweet latestTweet = new NormalTweet(text);
-				ImportantTweet latestImportantTweet = new ImportantTweet(text);
-				// latestTweet.setMessage(latestTweet.getMessage() + "!");
-				saveInFile(text, new Date(System.currentTimeMillis()));
-				finish();
+            public void onClick(View v) {
+                setResult(RESULT_OK);
+                String text = bodyText.getText().toString();
+                Tweet latestTweet = new NormalTweet(text);
+                ImportantTweet latestImportantTweet = new ImportantTweet(text);
+                // latestTweet.setMessage(latestTweet.getMessage() + "!");
+                tweets.add(latestTweet);
+                adapter.notifyDataSetChanged();
+                saveInFile();
+                //saveInFile(text, new Date(System.currentTimeMillis()));
+                //finish();
 
-			}
-		});
-	}
+            }
+        });
+        clearButton.setOnClickListener(new View.OnClickListener() {
+            public void onClick(View v) {
+            //clear tweets on disk & remove tweets on screen
+                tweets.clear();
+                adapter.notifyDataSetChanged();
+                saveInFile();
 
-	@Override
-	protected void onStart() {
-		// TODO Auto-generated method stub
-		super.onStart();
+            }
+        });
+    }
+
+    @Override
+    protected void onStart() {
+        // TODO Auto-generated method stub
+        super.onStart();
+        //String[] tweets = loadFromFile();
         loadFromFile();
-		//String[] tweets = loadFromFile();
         adapter = new ArrayAdapter<Tweet>(this,
                 R.layout.list_item, tweets);
+        oldTweetsList.setAdapter(adapter);
+    }
 
-		oldTweetsList.setAdapter(adapter);
-	}
+    private void loadFromFile() {
+        try {
+            FileInputStream fis = openFileInput(FILENAME);
+            BufferedReader in = new BufferedReader(new InputStreamReader(fis));
+            Gson gson = new Gson();
 
-	private String[] loadFromFile() {
-		//ArrayList<String> tweets = new ArrayList<String>();
-		try {
-			FileInputStream fis = openFileInput(FILENAME);
-			BufferedReader in = new BufferedReader(new InputStreamReader(fis));
-		    Gson gson = new Gson();
-
-            //** add citation ~~
+            // Took from https://google-gson.googlecode.com/svn/trunk/gson/docs/javadocs/com/google/gson/Gson.html 01-19 2016
             Type listType = new TypeToken<ArrayList<NormalTweet>>() {}.getType();
             tweets = gson.fromJson(in, listType);
 
-
-		} catch (FileNotFoundException e) {
-			// TODO Auto-generated catch block
+        } catch (FileNotFoundException e) {
+            // TODO Auto-generated catch block
             tweets = new ArrayList<Tweet>();
-			//e.printStackTrace();
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
+        } catch (IOException e) {
+            // TODO Auto-generated catch block
             throw new RuntimeException();
-			//e.printStackTrace();
-		}
-		return tweets.toArray(new String[tweets.size()]);
-	}
-	
-	private void saveInFile(String text, Date date) {
-		try {
-			FileOutputStream fos = openFileOutput(FILENAME,
-					0);
+        }
+    }
+
+    private void saveInFile() {
+        try {
+            FileOutputStream fos = openFileOutput(FILENAME,
+                    0);
             BufferedWriter out = new BufferedWriter(new OutputStreamWriter(fos));
             Gson gson = new Gson();
             gson.toJson(tweets, out);
             out.flush();
-			//fos.write(new String(date.toString() + " | " + text)
-			//		.getBytes());
-			fos.close();
-		} catch (FileNotFoundException e) {
-			// TODO Auto-generated catch block
+            fos.close();
+        } catch (FileNotFoundException e) {
+            // TODO Auto-generated catch block
             throw new RuntimeException();
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
+        } catch (IOException e) {
+            // TODO Auto-generated catch block
             throw new RuntimeException();
-		}
-	}
+        }
+    }
+
 }
