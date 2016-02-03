@@ -14,6 +14,7 @@ import java.util.Date;
 
 import android.app.Activity;
 import android.content.Context;
+import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.ArrayAdapter;
@@ -23,8 +24,52 @@ import android.widget.ListView;
 
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
-
+/**
+*Main Activity of the Lonely Twitter App. Does this, this this..
+*
+* @author justin
+ *@see Tweet
+* @version2.3
+*
+ */
 public class LonelyTwitterActivity extends Activity {
+    /**
+     * array is for ...
+     * @see #loadFromFile() l
+     *
+     */
+
+
+    private int calculateTweetSize() {
+        //
+        return -1;
+    }
+
+    private String removeStopWords(String text) {
+        //
+        return "";
+    }
+
+    /**
+     * This starts the next activity which is...
+     * @param intent This is the intent to be run immediately after hitting "start" button
+     *@deprecated
+     */
+    private void startSecondActivity(Intent intent){
+        //
+    }
+
+    /**
+     *
+     * @param s is some parameter
+     * @returnThe value that is used for some job
+     * @throws ...
+     * @deprecated
+     */
+    public String someMethod(String s){
+        return "";
+    }
+
 
     private static final String FILENAME = "file.sav";
     private EditText bodyText;
@@ -33,7 +78,10 @@ public class LonelyTwitterActivity extends Activity {
     private ArrayList<Tweet> tweets = new ArrayList<Tweet>();
     private ArrayAdapter<Tweet> adapter;
 
-    /** Called when the activity is first created. */
+    /** Called when the activity is first created.
+     * @param savedInstanceState
+     *
+     * */
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -71,6 +119,9 @@ public class LonelyTwitterActivity extends Activity {
         });
     }
 
+    /**
+     * Calls on loadfile function and updates the main activity list
+     */
     @Override
     protected void onStart() {
         // TODO Auto-generated method stub
@@ -82,6 +133,13 @@ public class LonelyTwitterActivity extends Activity {
         oldTweetsList.setAdapter(adapter);
     }
 
+    /**
+     * loads from file
+     *
+     * @throws RuntimeException
+     *
+     * @see Gson
+     */
     private void loadFromFile() {
         try {
             FileInputStream fis = openFileInput(FILENAME);
@@ -101,6 +159,12 @@ public class LonelyTwitterActivity extends Activity {
         }
     }
 
+    /**
+     * Saves tweets to file
+     * @throws RuntimeException
+     * @see Gson
+     *
+     */
     private void saveInFile() {
         try {
             FileOutputStream fos = openFileOutput(FILENAME,
