@@ -34,7 +34,9 @@ public class ElasticsearchTweetController {
             // NOTE: I'm a making a huge assumption here, that only the first search term
             // will be used.
 
-            Search search = new Search.Builder(search_strings[0])
+            String query = "{\"query\": {\"match\": {\"message\": \"" + search_strings[0] + "\"}}}";
+
+            Search search = new Search.Builder(query)
                     .addIndex("testing")
                     .addType("tweet")
                     .build();
@@ -57,6 +59,21 @@ public class ElasticsearchTweetController {
             return tweets;
         }
     }
+    //TODO: A function that gets certain tweets
+
+    public static class SearchTweets extends AsyncTask<String, Void, ArrayList<Tweet>> {
+
+        @Override
+        protected ArrayList<Tweet> doInBackground(String... search_strings) {
+            verifyClient();
+            ArrayList<Tweet> tweets = new ArrayList<Tweet>();
+
+            return null;
+        }
+    }
+
+
+
     //public static ArrayList<Tweet> getTweets() {
     //    verifyClient();
     //}
